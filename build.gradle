@@ -1,0 +1,52 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.4.RELEASE'
+        verifier_version = '2.0.1.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:${verifier_version}"
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'spring-cloud-contract'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-contract-dependencies:${verifier_version}"
+    }
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+ext['groovy.version'] = '2.5.0'
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compileOnly('org.projectlombok:lombok')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
+    testCompile('org.codehaus.groovy:groovy-all:2.5.2')
+    testCompile 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
+    testCompile('org.spockframework:spock-spring:1.1-groovy-2.4')
+}
+
+contracts {
+    testMode = 'MockMvc'
+    targetFramework = 'Spock'
+    baseClassForTests = 'com.example.testing.BaseMockMvcSpec'
+//    generatedTestSourcesDir = project.file('src/generatedContract')
+}
